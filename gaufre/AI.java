@@ -56,10 +56,10 @@ public class AI {
     public Point aiCoupGagnant(){
         Point p = new Point();
         if (!plateau[0][1] && plateau[1][0]){
-            p.setLocation(1,0);
+            p.setLocation(0,1);
         }
         else if(plateau[0][1] && !plateau[1][0]){
-            p.setLocation(0,1);
+            p.setLocation(1,0);
         }
         return p;
     }
