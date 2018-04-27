@@ -70,17 +70,22 @@ public class Gaufre {
             
         br.close();
     }
-     
+    
+    /**
+     * Lance une partie de gaufre dans le terminal, en joueur contre joueur ou joueur contre ordinateur
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public static void moteur() throws FileNotFoundException, IOException{
-        plateau = new boolean[6][8];
-        joueur = 1;
+        plateau = new boolean[6][8];    //plateau de jeu
+        joueur = 1; //joueur dont c'est le tour de joueur
         int abcisse, ordonnee, choix, choixAction, difficulte=0, playAgain=0;
         Point p = null;
         Scanner sc = new Scanner(System.in);
         
-        do{
+        do{ //Tant que la variable playAgain vaut 1 on rejout
         
-            for(int i=0; i<6; i++){
+            for(int i=0; i<6; i++){ //On initialise le plateau à true
                 for(int j=0; j<8; j++){
                     plateau[i][j]=true;
                 }
@@ -91,17 +96,17 @@ public class Gaufre {
             System.out.println("Entrez une valeur :");
             System.out.println("1: Joueur contre Joueur");
             System.out.println("2: Joueur contre Ordinateur");
-            choix = Integer.parseInt(sc.nextLine());
+            choix = Integer.parseInt(sc.nextLine());    //Choix du mode de jeu
 
-            if(choix==2){
+            if(choix==2){   //si en mode contre Ordinateur, choix de la difficulté
                 System.out.println("Choisissez une difficulté :");
                 System.out.println("1: Aléatoire");
                 System.out.println("2: Coup gagnant/Non coup perdant");
-                System.out.println("3: MinMax");
+                System.out.println("3: MinMax");    //MinMax ne marche pas, ici à titre de test pour l'équipe AI
                 difficulte = Integer.parseInt(sc.nextLine());
             }
 
-            for(int i=0; i<6 && (plateau[i][0]==true); i++){
+            for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau de jeu
                 System.out.print("|");
                 for(int j=0; j<8 && (plateau[i][j]==true); j++){
                     System.out.print("_|");
@@ -110,51 +115,47 @@ public class Gaufre {
             }
             System.out.println("");
 
-            while(plateau[0][0]){
+            while(plateau[0][0]){   //Tant que le poison n'a pas été joué, on continue la partie
 
                 System.out.println("Tour du joueur " + joueur);
-                System.out.println("Entrez les coordonées du point à manger");
 
-                if(choix==2 && joueur==2){
+                if(choix==2 && joueur==2){  ///si c'est le tour de l'ordinateur
                     AI ai = new AI(plateau,joueur);
-                    if(difficulte==1){
+                    if(difficulte==1){  //difficulté aléatoire
                         p = ai.aiAleatoire();
                     }
-                    else if(difficulte==2){
+                    else if(difficulte==2){ //difficulté Coup Gagnant et sinon Coup Non Perdant
                         p = ai.aiNonCoupPerdant();
                     }
-                    else{
+                    else{   //difficulté MinMax (pas utilisable)
                         ai.aiMinMax();
                     }
                     ordonnee = (int) p.getY();
                     abcisse = (int) p.getX();
                 }
-                else{
-                    System.out.println("Appuyer sur 1 pour sauvegarder, 0 sinon");
+                else{   //Tour d'un joueur humain
+                    System.out.println("Appuyer sur 1 pour sauvegarder, 2 pour charger une partie, 0 sinon");
                     choixAction = Integer.parseInt(sc.nextLine());
                     if(choixAction == 1)
                         save();
-                    
-                    System.out.println("Appuyer sur 1 pour charger, 0 sinon");
-                    choixAction = Integer.parseInt(sc.nextLine());
-                    if(choixAction == 1)
+                    else if(choixAction == 2)
                         load();
                     
-                    System.out.print("Abcisse :");
+                    System.out.print("Abcisse :");  //L'utilisateur entre l'abcisse et l'ordonnee
                     abcisse = Integer.parseInt(sc.nextLine());
                     System.out.println("");
                     System.out.print("Ordonnee :");
                     ordonnee = Integer.parseInt(sc.nextLine());
                     System.out.println("");
                 }
-
-                for(int i=ordonnee; i<6 ; i++){
+                
+                for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
                     for(int j=abcisse; j<8 ; j++){
                         plateau[i][j]=false;
                     }
-               }
+                }
 
-                for(int i=0; i<6 && (plateau[i][0]==true); i++){
+                for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau modifié
                     System.out.print("|");
                     for(int j=0; j<8 && (plateau[i][j]==true); j++){
                         System.out.print("_|");
@@ -163,17 +164,17 @@ public class Gaufre {
                 }
                 System.out.println("");
 
-                if(joueur==1)
+                if(joueur==1)   //On change le joueur dont c'est le tour
                     joueur=2;
                 else
                     joueur=1;
 
             }
 
-            if(choix==2 && joueur==2){
+            if(choix==2 && joueur==2){  //Si tour de l'ordinateur
                 System.out.println("ORDINATEUR VAINQUEUR");
             }
-            else{
+            else{   //Sinon, message de victoire adapté au joueur vainqueur
                 System.out.println("JOUEUR " + joueur + " VAINQUEUR");
             }
             System.out.println("Entrez 1 pour rejouer, 0 pour quitter");
