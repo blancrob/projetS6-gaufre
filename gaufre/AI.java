@@ -50,8 +50,8 @@ public class AI {
     }
     
     /**
-     * 
      * @return un point p permettant de gagner, null sinon.
+     * Si il ne reste que la colonne 0 ou que la ligne 0, on mange tout sauf la case poison -> c'est un coup gagnant 
      */
     public Point aiCoupGagnant(){
         Point p = new Point();
@@ -65,7 +65,6 @@ public class AI {
     }
     
     /**
-     * 
      * @return un point p permettant de gagner si possible ou de ne pas perdre sinon.
      */
     public Point aiNonCoupPerdant(){
@@ -81,6 +80,10 @@ public class AI {
         return p;
     }
     
+     /**
+     * @return un int[][] avec dans chaque case l'heuristique correspondante
+     * heuristique [i][j] = nombre de cases mangées en cliquant sur la case [i][j] (sauf cases [0][0],[1][0] et [0][1] -> 0 car entraine la défaite.
+     */
      public int[][] heuristique(){
         int[][] res = new int[hauteur][largeur];
         for(int i=hauteur-1 ; i>=0 ; i--) {
@@ -113,6 +116,10 @@ public class AI {
         return res;
     }
      
+      /**
+     * @return un int correspondant à l'heuristique de la configuration du plateau
+     * Simple parcours du plateau avec addition des différentes heuristiques
+     */
      public int heuristiquePlateau(int[][] res){
         int somme = 0;
         for(int i=0; i<res.length; i++){
