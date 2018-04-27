@@ -34,13 +34,18 @@ public class AI {
     public Point aiAleatoire(){
         Point p = new Point();
         Random r = new Random();
-        int y = r.nextInt(hauteur);
-        int x = r.nextInt(largeur);
-        while (!plateau[y][x]){
-            y = r.nextInt(hauteur);
-            x = r.nextInt(largeur);
+        if(!plateau[0][1] && !plateau[1][0]){
+            p.setLocation(0,0);
         }
-        p.setLocation(x,y);
+        else{
+            int y = r.nextInt(hauteur);
+            int x = r.nextInt(largeur);
+            while (!plateau[y][x] || (x==0 && y==0)){
+                y = r.nextInt(hauteur);
+                x = r.nextInt(largeur);
+            }
+            p.setLocation(x,y);
+        }
         return p;
     }
     
@@ -52,14 +57,24 @@ public class AI {
         else if(plateau[0][1] && !plateau[1][0]){
             p.setLocation(0,1);
         }
-        else{
-            p = this.aiAleatoire();
-        }
         return p;
     }
     
     public Point aiNonCoupPerdant(){
         Point p = new Point();
+        p = this.aiCoupGagnant();
+        if ( p==null ){
+            p=this.aiAleatoire();
+            if(plateau[0][1] && plateau[1][0] && (plateau[2][0] || plateau[1][1] || plateau[0][2])){
+               while((p.getX() <= 1 && p.getY()==0) || (p.getX() ==0 && p.getY() <=1) ){
+                   p=this.aiAleatoire();
+               }
+            }
+        }
         return p;
     }
+    
+    
+    
+    
 }
