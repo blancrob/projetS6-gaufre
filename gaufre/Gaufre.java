@@ -6,6 +6,7 @@
 package gaufre;
 
 import java.util.*;
+import java.io.*;
 import java.awt.Point;
 
 /**
@@ -16,11 +17,24 @@ public class Gaufre {
     
     static boolean [][] plateau;
     static int joueur;
+    
+    public static void save() throws FileNotFoundException, IOException{
+        File f = new File("test.txt");
+        FileWriter ffw = new FileWriter(f);
+        for(int i=0; i<6; i++){
+            for(int j=0; j<8; j++){
+                if(plateau[i][j]==true){
+                    ffw.write(i + " " + j + "\n");
+                }
+            }
+        }
+        ffw.close();
+    }
      
-    public static void moteur(){
+    public static void moteur() throws FileNotFoundException, IOException{
         plateau = new boolean[6][8];
         joueur = 1;
-        int abcisse, ordonnee, choix, difficulte=0, playAgain=0;
+        int abcisse, ordonnee, choix, choixAction, difficulte=0, playAgain=0;
         Point p = null;
         Scanner sc = new Scanner(System.in);
         
@@ -72,6 +86,10 @@ public class Gaufre {
                     abcisse = (int) p.getX();
                 }
                 else{
+                    System.out.println("Appuyer sur 1 pour sauvegarder, 0 sinon");
+                    choixAction = Integer.parseInt(sc.nextLine());
+                    if(choixAction == 1)
+                        save();
                     System.out.print("Abcisse :");
                     abcisse = Integer.parseInt(sc.nextLine());
                     System.out.println("");
@@ -114,7 +132,7 @@ public class Gaufre {
         
     }
     
-     public static void main(String[] args) {
+     public static void main(String[] args) throws FileNotFoundException, IOException {
         moteur();
      }
     
