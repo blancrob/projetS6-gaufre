@@ -30,6 +30,36 @@ public class Gaufre {
         }
         ffw.close();
     }
+    
+    public static void load() throws FileNotFoundException, IOException{
+        File f = new File("test.txt");
+        BufferedReader br = new BufferedReader(new FileReader(f));
+        String line;
+        String[] coord;
+        
+        for(int i=0; i<6; i++){
+            for(int j=0; j<8; j++){
+                plateau[i][j]=false;
+            }
+        }
+        
+        while ((line = br.readLine()) != null) {
+            coord=line.split(" ");
+            plateau[ Integer.parseInt(coord[0]) ][ Integer.parseInt(coord[1]) ] = true;
+        }
+        
+        System.out.println("Plateau chargé:");
+        for(int i=0; i<6 && (plateau[i][0]==true); i++){
+            System.out.print("|");
+            for(int j=0; j<8 && (plateau[i][j]==true); j++){
+                System.out.print("_|");
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+            
+        br.close();
+    }
      
     public static void moteur() throws FileNotFoundException, IOException{
         plateau = new boolean[6][8];
@@ -90,6 +120,12 @@ public class Gaufre {
                     choixAction = Integer.parseInt(sc.nextLine());
                     if(choixAction == 1)
                         save();
+                    
+                    System.out.println("Appuyer sur 1 pour charger, 0 sinon");
+                    choixAction = Integer.parseInt(sc.nextLine());
+                    if(choixAction == 1)
+                        load();
+                    
                     System.out.print("Abcisse :");
                     abcisse = Integer.parseInt(sc.nextLine());
                     System.out.println("");
