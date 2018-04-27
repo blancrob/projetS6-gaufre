@@ -20,7 +20,7 @@ public class Gaufre {
     public static void moteur(){
         plateau = new boolean[6][8];
         joueur = 1;
-        int abcisse,ordonnee;
+        int abcisse, ordonnee, choix;
         Scanner sc = new Scanner(System.in);
         
         for(int i=0; i<6; i++){
@@ -31,6 +31,11 @@ public class Gaufre {
         
         System.out.println("Jeu de la Gaufre");
         
+        System.out.println("Entrez une valeur :");
+        System.out.println("1: Joueur contre Joueur");
+        System.out.println("2: Joueur contre Ordinateur");
+        choix = Integer.parseInt(sc.nextLine());
+
         for(int i=0; i<6 && (plateau[i][0]==true); i++){
             System.out.print("|");
             for(int j=0; j<8 && (plateau[i][j]==true); j++){
@@ -45,70 +50,13 @@ public class Gaufre {
             System.out.println("Tour du joueur " + joueur);
             System.out.println("Entrez les coordonées du point à manger");
             
-            System.out.print("Abcisse :");
-            abcisse = Integer.parseInt(sc.nextLine());
-            System.out.println("");
-            System.out.print("Ordonnee :");
-            ordonnee = Integer.parseInt(sc.nextLine());
-            System.out.println("");
-            
-            for(int i=ordonnee; i<6 ; i++){
-                for(int j=abcisse; j<8 ; j++){
-                    plateau[i][j]=false;
-                }
-           }
-            
-            for(int i=0; i<6 && (plateau[i][0]==true); i++){
-                System.out.print("|");
-                for(int j=0; j<8 && (plateau[i][j]==true); j++){
-                    System.out.print("_|");
-                }
-                System.out.println("");
-            }
-            System.out.println("");
-            
-            if(joueur==1){
-                joueur=2;
+            if(joueur==2 && choix==2){
+                AI ai = new AI(plateau,joueur);
+                Point p = ai.aiAleatoire();
+                ordonnee = (int) p.getY();
+                abcisse = (int) p.getX();
             }
             else{
-                joueur=1;
-            }
-            
-        }
-        
-        System.out.println("JOUEUR " + joueur + " VAINQUEUR");
-        
-    }
-    
-    public static void moteur2(){
-        plateau = new boolean[6][8];
-        joueur = 1;
-        int abcisse,ordonnee;
-        Scanner sc = new Scanner(System.in);
-        
-        for(int i=0; i<6; i++){
-            for(int j=0; j<8; j++){
-                plateau[i][j]=true;
-            }
-        }
-        
-        System.out.println("Jeu de la Gaufre");
-        
-        for(int i=0; i<6 && (plateau[i][0]==true); i++){
-            System.out.print("|");
-            for(int j=0; j<8 && (plateau[i][j]==true); j++){
-                System.out.print("_|");
-            }
-            System.out.println("");
-        }
-        System.out.println("");
-        
-        while(plateau[0][0]){
-            
-            System.out.println("Tour du joueur " + joueur);
-            System.out.println("Entrez les coordonées du point à manger");
-            
-            if(joueur==1){
                 System.out.print("Abcisse :");
                 abcisse = Integer.parseInt(sc.nextLine());
                 System.out.println("");
@@ -116,13 +64,6 @@ public class Gaufre {
                 ordonnee = Integer.parseInt(sc.nextLine());
                 System.out.println("");
             }
-            else{
-                AI ai = new AI(plateau,joueur);
-                Point p = ai.aiAleatoire();
-                
-                ordonnee = (int) p.getY();
-                abcisse = (int) p.getX();
-            }
             
             for(int i=ordonnee; i<6 ; i++){
                 for(int j=abcisse; j<8 ; j++){
@@ -148,22 +89,17 @@ public class Gaufre {
             
         }
         
-        System.out.println("JOUEUR " + joueur + " VAINQUEUR");
+        if(choix==2 && joueur==2){
+            System.out.println("ORDINATEUR VAINQUEUR");
+        }
+        else{
+            System.out.println("JOUEUR " + joueur + " VAINQUEUR");
+        }
+        
     }
     
      public static void main(String[] args) {
-         Scanner sc = new Scanner(System.in);
-         int choix;
-         System.out.println("Entrez une valeur :");
-         System.out.println("1: Joueur contre Joueur");
-         System.out.println("2: Joueur contre Ordinateur");
-         choix = Integer.parseInt(sc.nextLine());
-         if(choix == 1){
-            moteur();
-         }
-         else{
-            moteur2();
-         }
+        moteur();
      }
     
 }
