@@ -20,7 +20,8 @@ public class Gaufre {
     public static void moteur(){
         plateau = new boolean[6][8];
         joueur = 1;
-        int abcisse, ordonnee, choix;
+        int abcisse, ordonnee, choix, difficulte=0;
+        Point p = null;
         Scanner sc = new Scanner(System.in);
         
         for(int i=0; i<6; i++){
@@ -35,6 +36,13 @@ public class Gaufre {
         System.out.println("1: Joueur contre Joueur");
         System.out.println("2: Joueur contre Ordinateur");
         choix = Integer.parseInt(sc.nextLine());
+        
+        if(choix==2){
+            System.out.println("Choisissez une difficulté :");
+            System.out.println("1: Aléatoire");
+            System.out.println("2: Coup gagnant/Non coup perdant");
+            difficulte = Integer.parseInt(sc.nextLine());
+        }
 
         for(int i=0; i<6 && (plateau[i][0]==true); i++){
             System.out.print("|");
@@ -50,9 +58,14 @@ public class Gaufre {
             System.out.println("Tour du joueur " + joueur);
             System.out.println("Entrez les coordonées du point à manger");
             
-            if(joueur==2 && choix==2){
+            if(choix==2 && joueur==2){
                 AI ai = new AI(plateau,joueur);
-                Point p = ai.aiAleatoire();
+                if(difficulte==1){
+                    p = ai.aiAleatoire();
+                }
+                else if(difficulte==2){
+                    p = ai.aiNonCoupPerdant();
+                }
                 ordonnee = (int) p.getY();
                 abcisse = (int) p.getX();
             }
