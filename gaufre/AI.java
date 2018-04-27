@@ -112,6 +112,25 @@ public class AI {
             System.out.println("");
         return res;
     }
+     
+     public int heuristiquePlateau(int[][] res){
+        int somme = 0;
+        for(int i=0; i<res.length; i++){
+             for(int j=0; j<res[0].length; j++){
+                 somme = somme + res[i][j];
+             }
+         }
+        return somme;
+     }
+     
+     
+     public Point aiMinMax(){
+         
+        Point p = new Point();
+        
+        
+        return p;
+     }
     
     
 }
