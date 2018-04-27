@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package gaufre;
-
+import static gaufre.Gaufre.plateau;
 import java.util.*;
 import java.awt.Point;
 public class AI {
@@ -81,7 +81,37 @@ public class AI {
         return p;
     }
     
-    
+     public int[][] heuristique(){
+        int[][] res = new int[hauteur][largeur];
+        for(int i=hauteur-1 ; i>=0 ; i--) {
+            for (int j=largeur-1 ; j >= 0; j--){
+                if(plateau[i][j]){
+                    int hauteurbis = 0;
+                    int k = i;
+                    while (k<hauteur && plateau[k][j]){
+                        k++;
+                        hauteurbis++;
+                    }
+                    if (j == largeur -1 || !plateau[i][j+1]){
+                        res[i][j] = hauteurbis;
+                    }
+                    else{
+                        res[i][j] = hauteurbis + res[i][j+1];
+                    }
+                }     
+            } 
+        }  
+        res[0][0]=res[0][1]=res[1][0]=0;
+        for (int[] re : res) {
+            System.out.print("|");
+            for (int j = 0; j < re.length; j++) {
+                System.out.print(re[j] + "|");
+            }
+            System.out.println("");
+        }
+            System.out.println("");
+        return res;
+    }
     
     
 }
