@@ -71,6 +71,16 @@ public class Gaufre {
         br.close();
     }
     
+    public static boolean[][] jouer_coup(boolean[][] tab, int ordonnee, int abcisse){
+        for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
+            for(int j=abcisse; j<8 ; j++){
+                tab[i][j]=false;
+            }
+        }
+        
+        return tab;
+    }
+    
     /**
      * Lance une partie de gaufre dans le terminal, en joueur contre joueur ou joueur contre ordinateur
      * @throws FileNotFoundException
@@ -149,11 +159,7 @@ public class Gaufre {
                     System.out.println("");
                 }
                 
-                for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
-                    for(int j=abcisse; j<8 ; j++){
-                        plateau[i][j]=false;
-                    }
-                }
+                plateau = jouer_coup(plateau, ordonnee, abcisse);
 
                 for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau modifié
                     System.out.print("|");
