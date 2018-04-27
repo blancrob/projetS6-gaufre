@@ -18,10 +18,15 @@ public class Gaufre {
     static boolean [][] plateau;
     static int joueur;
     
+    /**
+     * Sauvegarde le plateau courant dans un fichier sauvegarde.txt
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public static void save() throws FileNotFoundException, IOException{
-        File f = new File("test.txt");
+        File f = new File("sauvegarde.txt");
         FileWriter ffw = new FileWriter(f);
-        for(int i=0; i<6; i++){
+        for(int i=0; i<6; i++){ // Parcours du plateau, les coordonnées des cases à true sont notées dans le fichier, une par ligne
             for(int j=0; j<8; j++){
                 if(plateau[i][j]==true){
                     ffw.write(i + " " + j + "\n");
@@ -31,25 +36,30 @@ public class Gaufre {
         ffw.close();
     }
     
+    /**
+     * On charge un plateau de jeu à partir des coordonnées dans le fichier sauvegarde.txt
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public static void load() throws FileNotFoundException, IOException{
-        File f = new File("test.txt");
+        File f = new File("sauvegarde.txt");
         BufferedReader br = new BufferedReader(new FileReader(f));
         String line;
         String[] coord;
         
-        for(int i=0; i<6; i++){
+        for(int i=0; i<6; i++){ //on initialise toutes les cases du plateau à false
             for(int j=0; j<8; j++){
                 plateau[i][j]=false;
             }
         }
         
-        while ((line = br.readLine()) != null) {
+        while ((line = br.readLine()) != null) {    //On récupère les coordonnées des cases dans le fichier sauvegarde.txt, puis on les met à true dans le plateau
             coord=line.split(" ");
             plateau[ Integer.parseInt(coord[0]) ][ Integer.parseInt(coord[1]) ] = true;
         }
         
         System.out.println("Plateau chargé:");
-        for(int i=0; i<6 && (plateau[i][0]==true); i++){
+        for(int i=0; i<6 && (plateau[i][0]==true); i++){    //affichage du plateau chargé
             System.out.print("|");
             for(int j=0; j<8 && (plateau[i][j]==true); j++){
                 System.out.print("_|");
@@ -87,6 +97,7 @@ public class Gaufre {
                 System.out.println("Choisissez une difficulté :");
                 System.out.println("1: Aléatoire");
                 System.out.println("2: Coup gagnant/Non coup perdant");
+                System.out.println("3: MinMax");
                 difficulte = Integer.parseInt(sc.nextLine());
             }
 
@@ -111,6 +122,9 @@ public class Gaufre {
                     }
                     else if(difficulte==2){
                         p = ai.aiNonCoupPerdant();
+                    }
+                    else{
+                        ai.aiMinMax();
                     }
                     ordonnee = (int) p.getY();
                     abcisse = (int) p.getX();
