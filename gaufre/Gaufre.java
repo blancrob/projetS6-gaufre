@@ -9,10 +9,6 @@ import java.util.*;
 import java.io.*;
 import java.awt.Point;
 
-/**
- *
- * @author costeb
- */
 public class Gaufre {
     
     static boolean [][] plateau;
