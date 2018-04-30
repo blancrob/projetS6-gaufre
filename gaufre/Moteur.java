@@ -13,10 +13,13 @@ public class Moteur {
     
     boolean [][] plateau;
     int joueur, attendre, mode, difficulte;
+    Stack<boolean[][]> undo, redo;
     
     public Moteur(){
         plateau = new boolean[6][8];
         joueur = 1;
+        undo = new Stack();
+        redo = new Stack();
         Scanner sc = new Scanner(System.in);
         
         System.out.println("Jeu de la Gaufre");
@@ -42,6 +45,21 @@ public class Moteur {
         }
         
         attendre = 1;
+    }
+    
+    public void undo(){
+        redo.push(plateau);
+        if(!undo.empty()){
+         plateau = undo.pop();
+        }
+    }
+    
+    public void redo(){
+        undo.push(plateau);
+        if(!redo.empty()
+                ){
+            plateau = redo.pop();
+        }
     }
     
     /**
@@ -130,15 +148,17 @@ public class Moteur {
     }
     
     public boolean[][] jouer_coup(boolean[][] tab, int ordonnee, int abcisse){
+        undo.push(tab);
+        
         for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
             for(int j=abcisse; j<8 ; j++){
                 tab[i][j]=false;
             }
         }
         
-        for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau de jeu
+        for(int i=0; i<6 && (tab[i][0]==true); i++){    //Affichage du plateau de jeu
             System.out.print("|");
-            for(int j=0; j<8 && (plateau[i][j]==true); j++){
+            for(int j=0; j<8 && (tab[i][j]==true); j++){
                 System.out.print("_|");
             }
             System.out.println("");
@@ -149,7 +169,9 @@ public class Moteur {
     }
     
     public boolean[][] jouer_coup_ai(boolean[][] tab, int difficulte){
-        AI ai = new AI(plateau,joueur);
+        undo.push(tab);
+        
+        AI ai = new AI(tab,joueur);
         Point p = null;
         
         switch(difficulte){
@@ -169,9 +191,9 @@ public class Moteur {
             }
         }
         
-        for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau de jeu
+        for(int i=0; i<6 && (tab[i][0]==true); i++){    //Affichage du plateau de jeu
             System.out.print("|");
-            for(int j=0; j<8 && (plateau[i][j]==true); j++){
+            for(int j=0; j<8 && (tab[i][j]==true); j++){
                 System.out.print("_|");
             }
             System.out.println("");
