@@ -1,7 +1,10 @@
 package gaufre;
 
+import java.io.IOException;
 import javafx.animation.AnimationTimer;
 import static java.lang.Math.toIntExact;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -51,6 +54,9 @@ public class Gaufre extends Application {
             for(int j=0;j<M;j++){
                 if(m.plateau[j][i]==false){
                     tab[i][j].c.setFill(Color.WHITE);
+                }
+                else{
+                    tab[i][j].c.setFill(Color.MOCCASIN);
                 }
             }
         }
@@ -119,7 +125,40 @@ public class Gaufre extends Application {
                     }
                 }
             }
-        });     
+        });
+        
+        btn6.setOnAction((ActionEvent event) -> {
+            //Arrière
+            m.undo();
+            actualiser(tab,m);
+        });
+        
+        btn7.setOnAction((ActionEvent event) -> {
+            //Avant
+            m.redo();
+            actualiser(tab,m);
+        });
+        
+        btn8.setOnAction((ActionEvent event) -> {
+            try {
+                //Sauvegarder
+                m.save();
+                actualiser(tab,m);
+            } catch (IOException ex) {
+                Logger.getLogger(Gaufre.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        btn9.setOnAction((ActionEvent event) -> {
+            try {
+                //Charger
+                m.load();
+                actualiser(tab,m);
+            } catch (IOException ex) {
+                Logger.getLogger(Gaufre.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
     }
     
     public void affichage_mode_jeu(Stage primaryStage, Button btn1, Button btn2){

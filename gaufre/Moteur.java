@@ -22,22 +22,6 @@ public class Moteur {
         redo = new Stack();
         Scanner sc = new Scanner(System.in);
         
-        System.out.println("Jeu de la Gaufre");
-
-        System.out.println("Entrez une valeur :");
-        System.out.println("1: Joueur contre Joueur");
-        System.out.println("2: Joueur contre Ordinateur");
-        mode = Integer.parseInt(sc.nextLine());    //Choix du mode de jeu
-
-        if(mode==2){   //si en mode contre Ordinateur, choix de la difficulté
-            System.out.println("Choisissez une difficulté :");
-            System.out.println("1: Aléatoire");
-            System.out.println("2: Coup gagnant/Non coup perdant");
-            System.out.println("3: MinMax");    //MinMax ne marche pas, ici à titre de test pour l'équipe AI
-            difficulte = Integer.parseInt(sc.nextLine());
-        }
-        
-        
         for(int i=0; i<6; i++){ // Parcours du plateau, les coordonnées des cases à true sont notées dans le fichier, une par ligne
             for(int j=0; j<8; j++){
                 plateau[i][j]=true;
@@ -56,16 +40,27 @@ public class Moteur {
     }
     
     public void undo(){
-        redo.push(plateau);
         if(!undo.empty()){
-         plateau = undo.pop();
+            boolean [][] tmp = new boolean[6][8];
+            for(int i=0; i<6; i++){    //Affichage du plateau de jeu
+                for(int j=0; j<8 ; j++){
+                    tmp[i][j]=plateau[i][j];
+                }
+            }
+            redo.push(tmp);
+            plateau = undo.pop();
         }
     }
     
     public void redo(){
-        undo.push(plateau);
-        if(!redo.empty()
-                ){
+        if(!redo.empty()){
+            boolean [][] tmp = new boolean[6][8];
+            for(int i=0; i<6; i++){    //Affichage du plateau de jeu
+                for(int j=0; j<8 ; j++){
+                    tmp[i][j]=plateau[i][j];
+                }
+            }
+            undo.push(plateau);
             plateau = redo.pop();
         }
     }
@@ -156,7 +151,14 @@ public class Moteur {
     }
     
     public boolean[][] jouer_coup(boolean[][] tab, int ordonnee, int abcisse){
-        undo.push(tab);
+        boolean [][] tmp = new boolean[6][8];
+        for(int i=0; i<6; i++){    //Affichage du plateau de jeu
+            for(int j=0; j<8 ; j++){
+                tmp[i][j]=tab[i][j];
+            }
+        }
+        
+        undo.push(tmp);
         
         for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
             for(int j=abcisse; j<8 ; j++){
@@ -177,7 +179,6 @@ public class Moteur {
     }
     
     public boolean[][] jouer_coup_ai(boolean[][] tab, int difficulte){
-        undo.push(tab);
         
         AI ai = new AI(tab,joueur);
         Point p = null;
