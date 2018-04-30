@@ -1,11 +1,17 @@
 package gaufre;
 
 import static gaufre.Moteur.*;
+import javafx.animation.AnimationTimer;
 import java.awt.Point;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import static java.lang.Math.toIntExact;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -14,6 +20,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 public class Gaufre extends Application {
@@ -26,6 +33,9 @@ public class Gaufre extends Application {
     
     private int m_scene = lx*M+1;
     private int n_scene = ly*N+1;
+    
+    public int ai=0;
+    public long temps=0;
     
     public static void main(String[] args) {
         Application.launch(Gaufre.class,args);
@@ -111,16 +121,48 @@ public class Gaufre extends Application {
                 
                     actualiser(tab, m);
                     
-                    if (m.mode==1){
+                    if(m.mode==2){
+                        ai=1;
+                        temps = System.currentTimeMillis();
+                    }
+                    
+                   // while(true){}
+                    
+                    /*if (m.mode==1){
                         m.attendre=1;
                     }
                     else{
                         m.traiterCoupAI();
                         actualiser(tab, m);
-                    }
+                    }*/
                 }
             }
         });
+        
+       AnimationTimer timer = new AnimationTimer() {
+        @Override
+            public void handle(long now) {
+                if (m.mode==2 && ai==1 && temps+2000<System.currentTimeMillis()){
+                    m.traiterCoupAI();
+                    ai=0;
+                    actualiser(tab, m);
+                }
+            }
+        };
+        timer.start();
+        
+       /* Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (m.mode==2 && ai==1){
+                    m.traiterCoupAI();
+                    ai=0;
+                    actualiser(tab, m);
+                }
+            }
+        }, 0, 2000);*/
+
         
         primaryStage.setScene(scene);
         primaryStage.show();
