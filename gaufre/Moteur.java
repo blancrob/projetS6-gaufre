@@ -190,6 +190,9 @@ public class Moteur {
             case(2):
                 p = ai.aiNonCoupPerdant();
                 break;
+            case(3):
+                p = ai.aiMinMax();
+                break;
         }
         int ordonnee = (int) p.getY();
         int abcisse = (int) p.getX();
