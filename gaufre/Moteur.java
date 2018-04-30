@@ -47,6 +47,14 @@ public class Moteur {
         attendre = 1;
     }
     
+     public Moteur(boolean[][] plateau){
+        this.plateau=plateau;
+        joueur = 0 ;
+        attendre = 0 ;
+        difficulte = 0 ;
+        mode = 0 ;
+    }
+    
     public void undo(){
         redo.push(plateau);
         if(!undo.empty()){
