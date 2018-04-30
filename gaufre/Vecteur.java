@@ -7,8 +7,18 @@ package gaufre;
 
 /**
  *
- * @author gueriant
+ * 
  */
 public class Vecteur {
+    int vec;
+    
+    
+    public Vecteur(){
+        vec = 0;
+    }
+    
+    public Vecteur(boolean[][] plateau){
+        
+    }
     
 }
