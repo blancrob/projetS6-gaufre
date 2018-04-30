@@ -3,16 +3,20 @@ package gaufre;
 import java.io.IOException;
 import javafx.animation.AnimationTimer;
 import static java.lang.Math.toIntExact;
+import static java.lang.System.exit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -25,11 +29,17 @@ public class Gaufre extends Application {
     public static int M = 6;
     public static int N = 8;
     
-    public static int begin = 0;
+    //public static int begin = 0;
     
     public Moteur m;
     
     public Case[][] tab;
+    
+    Text tour;
+    Text gagnant;
+    
+    Button btn1 = new Button("Joueur VS Joueur");
+    Button btn2 = new Button("Joueur VS Ordinateur");
     
     public AnchorPane pane = new AnchorPane();
     
@@ -49,7 +59,6 @@ public class Gaufre extends Application {
     }
     
     public void actualiser(Case[][] tab, Moteur m){
-
         for(int i=0;i<N;i++){       //rajouter modif booleen case non jouable
             for(int j=0;j<M;j++){
                 if(m.plateau[j][i]==false){
@@ -63,52 +72,72 @@ public class Gaufre extends Application {
     }
     
     public void affichage_gaufre(Stage primaryStage, Button btn6, Button btn7, Button btn8, Button btn9){
-        primaryStage.setTitle("Affichage de la gaufre");
+        primaryStage.setTitle("Jeu de la gaufre");
         pane = new AnchorPane();
-        scene = new Scene(pane,n_scene,m_scene+100,Color.GREY);       
-        pane.setStyle("-fx-border-color: black;");
+        scene = new Scene(pane,n_scene+200,m_scene+100,Color.GREY);       
+        //pane.setStyle("-fx-border-color: black;");
+        
+        tour = new Text("Tour joueur 1");
+        
+        //Rectangle fond = new Rectangle();
+        
         
         pane.getChildren().add(btn6);
         pane.getChildren().add(btn7);
         pane.getChildren().add(btn8);
         pane.getChildren().add(btn9);
+        pane.getChildren().add(tour);
+        //pane.getChildren().add(fond);
         
         AnchorPane.setTopAnchor(btn6,600.0);
         AnchorPane.setLeftAnchor(btn6,0.0);
-        AnchorPane.setRightAnchor(btn6,600.0);
+        AnchorPane.setRightAnchor(btn6,750.0);
         AnchorPane.setBottomAnchor(btn6,0.0);
             
         AnchorPane.setTopAnchor(btn7,600.0);
-        AnchorPane.setLeftAnchor(btn7,200.0);
-        AnchorPane.setRightAnchor(btn7,400.0);
+        AnchorPane.setLeftAnchor(btn7,250.0);
+        AnchorPane.setRightAnchor(btn7,500.0);
         AnchorPane.setBottomAnchor(btn7,0.0);
         
         AnchorPane.setTopAnchor(btn8,600.0);
-        AnchorPane.setLeftAnchor(btn8,400.0);
-        AnchorPane.setRightAnchor(btn8,200.0);
+        AnchorPane.setLeftAnchor(btn8,500.0);
+        AnchorPane.setRightAnchor(btn8,250.0);
         AnchorPane.setBottomAnchor(btn8,0.0);
         
         AnchorPane.setTopAnchor(btn9,600.0);
-        AnchorPane.setLeftAnchor(btn9,600.0);
+        AnchorPane.setLeftAnchor(btn9,750.0);
         AnchorPane.setRightAnchor(btn9,0.0);
         AnchorPane.setBottomAnchor(btn9,0.0);
+        
+        AnchorPane.setTopAnchor(tour,100.0);
+        AnchorPane.setLeftAnchor(tour,850.0);
+        AnchorPane.setRightAnchor(tour,0.0);
+        AnchorPane.setBottomAnchor(tour,800.0);
               
         tab = new Case[N][M];
         init(tab,pane);
         primaryStage.setScene(scene);
         primaryStage.show();
         
+        
+        
         scene.setOnMouseClicked((MouseEvent me) -> {
-            //System.out.println("Coordonnée X brute : "+me.getX()+"    Coordonnée Y brute : "+ me.getY());
             int x = toIntExact(Math.round(Math.floor(me.getY()/ly)));
             int y = toIntExact(Math.round(Math.floor(me.getX()/lx)));
-            
-            if(x<M){
-                begin=1;
-                
+
+            if(x<M && y<N){
+                //begin=1;
+
                 System.out.println("Coordonnée i : "+x+"    Coordonnée j : "+y);
                 
                 if(m.plateau[x][y]==true){
+                    
+                    if(m.joueur==1 && m.mode!=2){
+                        tour.setText("Tour Joueur 2");
+                    }
+                    else if(m.joueur==2 && m.mode!=2){
+                        tour.setText("Tour Joueur 1");
+                    }
                     
                     if (m.attendre==1){
                         m.traiterCoupHumain(x,y);
@@ -124,6 +153,9 @@ public class Gaufre extends Application {
                         }
                     }
                 }
+                if(m.plateau[0][0]==false){
+                    affichage_resultat(primaryStage);
+                }
             }
         });
         
@@ -131,12 +163,24 @@ public class Gaufre extends Application {
             //Arrière
             m.undo();
             actualiser(tab,m);
+            /*if(m.joueur==1 && m.mode!=2){
+                tour.setText("Tour Joueur 2");
+            }
+            else if(m.joueur==2 && m.mode!=2){
+                tour.setText("Tour Joueur 1");
+            }*/
         });
         
         btn7.setOnAction((ActionEvent event) -> {
             //Avant
             m.redo();
             actualiser(tab,m);
+            /*if(m.joueur==1 && m.mode!=2){
+                tour.setText("Tour Joueur 2");
+            }
+            else if(m.joueur==2 && m.mode!=2){
+                tour.setText("Tour Joueur 1");
+            }*/
         });
         
         btn8.setOnAction((ActionEvent event) -> {
@@ -144,6 +188,12 @@ public class Gaufre extends Application {
                 //Sauvegarder
                 m.save();
                 actualiser(tab,m);
+                /*if(m.joueur==1 && m.mode!=2){
+                    tour.setText("Tour Joueur 2");
+                }
+                else if(m.joueur==2 && m.mode!=2){
+                    tour.setText("Tour Joueur 1");
+                }*/
             } catch (IOException ex) {
                 Logger.getLogger(Gaufre.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -154,6 +204,12 @@ public class Gaufre extends Application {
                 //Charger
                 m.load();
                 actualiser(tab,m);
+                /*if(m.joueur==1 && m.mode!=2){
+                    tour.setText("Tour Joueur 2");
+                }
+                else if(m.joueur==2 && m.mode!=2){
+                    tour.setText("Tour Joueur 1");
+                }*/
             } catch (IOException ex) {
                 Logger.getLogger(Gaufre.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -165,7 +221,7 @@ public class Gaufre extends Application {
         primaryStage.setTitle("Sélection du mode de jeu");       
         AnchorPane mode_j = new AnchorPane();
         Scene sc = new Scene(mode_j,n_scene,m_scene,Color.GREY);
-        mode_j.setStyle("-fx-border-color: black;");
+        //mode_j.setStyle("-fx-border-color: black;");
         
         mode_j.getChildren().add(btn1);
         mode_j.getChildren().add(btn2);
@@ -218,11 +274,9 @@ public class Gaufre extends Application {
         for(int i=0;i<N;i++){
             for(int j=0;j<M;j++){
                 tab[i][j] = new Case(lx,ly);
-                //tab[i][j].setTranslateX(-((n_scene/2)-(lx/2))+lx*i);        //StackPane
-                //tab[i][j].setTranslateY(-((m_scene/2)-(ly/2))+ly*j);        //StackPane
-                
-                tab[i][j].setTranslateX(lx*i);        //AnchorPane
-                tab[i][j].setTranslateY(ly*j);        //AnchorPane
+
+                tab[i][j].setTranslateX(lx*i);
+                tab[i][j].setTranslateY(ly*j);
 
                 tab[i][j].c.setFill(Color.MOCCASIN);
                 AnchorPane.setTopAnchor(tab[i][j].c,(double)i*lx);
@@ -237,12 +291,58 @@ public class Gaufre extends Application {
         poison.setCenterX(50);
         poison.setCenterY(50);
         poison.setRadius(25);
-        //poison.setTranslateX(-(n_scene/2)+(lx/2)-1);      //StackPane
-        //poison.setTranslateY(-(m_scene/2)+(ly/2)-1);      //StackPane
         poison.setFill(Color.FIREBRICK);
         pane.getChildren().add(poison);
 
-        pane.setStyle("-fx-border-color: black;");
+        //pane.setStyle("-fx-border-color: black;");
+    }
+    
+    public void affichage_resultat(Stage primaryStage){
+        
+        Button btn10 = new Button("Recommencer");
+        Button btn11 = new Button("Quitter");
+        
+        primaryStage.setTitle("Résultat de la partie");       
+        StackPane res = new StackPane();
+        Scene sc;
+        sc = new Scene(res,n_scene/2,m_scene/2,Color.GREY);
+        
+        res.getChildren().add(btn10);
+        res.getChildren().add(btn11);
+        
+        btn10.setTranslateX(-100);
+        btn10.setTranslateY(-50);
+        
+        btn11.setTranslateX(100);
+        btn11.setTranslateY(50);
+
+        if(m.mode==2 && m.joueur == 2){
+            gagnant = new Text("Vainqueur : IA");
+        }
+        else if(m.joueur == 1){
+            gagnant = new Text("Vainqueur : Joueur 1");
+        }
+        else{
+            gagnant = new Text("Vainqueur : Joueur 2");
+        }
+        
+        btn10.setOnAction((ActionEvent event) -> {
+            //Recommencer
+            start(primaryStage);
+        });
+        
+        btn11.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                //Quitter
+                exit(0);
+            }
+        });
+        
+        res.getChildren().add(gagnant);
+        
+        primaryStage.setScene(sc);
+        primaryStage.show();
     }
     
     @Override
@@ -250,8 +350,6 @@ public class Gaufre extends Application {
         
         m = new Moteur();
 
-        Button btn1 = new Button("Joueur VS Joueur");
-        Button btn2 = new Button("Joueur VS Ordinateur");
         Button btn3 = new Button("Facile");
         Button btn4 = new Button("Moyen");
         Button btn5 = new Button("Difficile");
@@ -296,10 +394,15 @@ public class Gaufre extends Application {
         AnimationTimer timer = new AnimationTimer() {
         @Override
             public void handle(long now) {
-                if (m.mode==2 && ai==1 && temps+1000<System.currentTimeMillis()){
-                    m.traiterCoupAI();
-                    ai=0;
-                    actualiser(tab, m);
+                if(m.mode == 2 && ai == 1){
+                    if (m.mode==2 && ai==1 && temps+1000<System.currentTimeMillis()){
+                        m.traiterCoupAI();
+                        ai=0;
+                        actualiser(tab, m);
+                    }
+                    if(m.plateau[0][0]==false){
+                        affichage_resultat(primaryStage);
+                    }
                 }
             }
         };

@@ -126,7 +126,7 @@ public class Moteur {
             else{   //Sinon, message de victoire adapté au joueur vainqueur
                 System.out.println("JOUEUR " + joueur + " VAINQUEUR");
             }
-            System.exit(0);
+            //System.exit(0);
         }
     }
     
