@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package gaufre;
-import static gaufre.Gaufre.plateau;
 import java.util.*;
 import java.awt.Point;
 public class AI {
