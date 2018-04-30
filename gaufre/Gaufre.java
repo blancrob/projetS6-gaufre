@@ -118,6 +118,7 @@ public class Gaufre extends Application {
         init(tab,pane);
         primaryStage.setScene(scene);
         primaryStage.show();
+
         
         
         
