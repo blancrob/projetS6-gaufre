@@ -142,7 +142,7 @@ public class Gaufre extends Application {
        AnimationTimer timer = new AnimationTimer() {
         @Override
             public void handle(long now) {
-                if (m.mode==2 && ai==1 && temps+2000<System.currentTimeMillis()){
+                if (m.mode==2 && ai==1 && temps+1000<System.currentTimeMillis()){
                     m.traiterCoupAI();
                     ai=0;
                     actualiser(tab, m);
