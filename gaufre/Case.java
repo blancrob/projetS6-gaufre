@@ -22,8 +22,8 @@ public class Case extends Parent {
     
     public Case(int lengthX, int lengthY) {
         
-        int l = Display.N;
-        int h = Display.M;
+        int l = Gaufre.N;
+        int h = Gaufre.M;
         
         c = new Rectangle(lengthX,lengthY);
         c.setStroke(Color.BLACK);
