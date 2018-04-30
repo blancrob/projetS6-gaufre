@@ -1,192 +1,168 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gaufre;
 
-import java.util.*;
-import java.io.*;
+import static gaufre.Moteur.*;
 import java.awt.Point;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import static java.lang.Math.toIntExact;
+import java.util.Scanner;
+import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 
-public class Gaufre {
+
+public class Gaufre extends Application {
     
-    static boolean [][] plateau;
-    static int joueur;
+    public static int M = 6;
+    public static int N = 8;
     
-    /**
-     * Sauvegarde le plateau courant dans un fichier sauvegarde.txt
-     * @throws FileNotFoundException
-     * @throws IOException 
-     */
-    public static void save() throws FileNotFoundException, IOException{
-        File f = new File("sauvegarde.txt");
-        FileWriter ffw = new FileWriter(f);
-        for(int i=0; i<6; i++){ // Parcours du plateau, les coordonnées des cases à true sont notées dans le fichier, une par ligne
-            for(int j=0; j<8; j++){
-                if(plateau[i][j]==true){
-                    ffw.write(i + " " + j + "\n");
-                }
-            }
-        }
-        ffw.close();
+    private int lx = 100;   //taille hauteur case
+    private int ly = 100;   //taille largeur case
+    
+    private int m_scene = lx*M+1;
+    private int n_scene = ly*N+1;
+    
+    public static void main(String[] args) {
+        Application.launch(Gaufre.class,args);
     }
     
-    /**
-     * On charge un plateau de jeu à partir des coordonnées dans le fichier sauvegarde.txt
-     * @throws FileNotFoundException
-     * @throws IOException 
-     */
-    public static void load() throws FileNotFoundException, IOException{
-        File f = new File("sauvegarde.txt");
-        BufferedReader br = new BufferedReader(new FileReader(f));
-        String line;
-        String[] coord;
-        
-        for(int i=0; i<6; i++){ //on initialise toutes les cases du plateau à false
-            for(int j=0; j<8; j++){
-                plateau[i][j]=false;
+    /*public void jouer_coup2(int x, int y){
+        Gaufre_test a = new Gaufre_test();
+        plateau = a.jouer_coup(plateau, y, x);
+    }*/
+    
+    public void actualiser(Case[][] tab, Moteur m){
+
+        for(int i=0;i<N;i++){       //rajouter modif booleen case non jouable
+            for(int j=0;j<M;j++){
+                if(m.plateau[j][i]==false){
+                    tab[i][j].c.setFill(Color.WHITE);
+                }
             }
         }
         
-        while ((line = br.readLine()) != null) {    //On récupère les coordonnées des cases dans le fichier sauvegarde.txt, puis on les met à true dans le plateau
-            coord=line.split(" ");
-            plateau[ Integer.parseInt(coord[0]) ][ Integer.parseInt(coord[1]) ] = true;
-        }
-        
-        System.out.println("Plateau chargé:");
-        for(int i=0; i<6 && (plateau[i][0]==true); i++){    //affichage du plateau chargé
-            System.out.print("|");
-            for(int j=0; j<8 && (plateau[i][j]==true); j++){
-                System.out.print("_|");
-            }
-            System.out.println("");
-        }
-        System.out.println("");
-            
-        br.close();
     }
     
-    public static boolean[][] jouer_coup(boolean[][] tab, int ordonnee, int abcisse){
-        for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
-            for(int j=abcisse; j<8 ; j++){
-                tab[i][j]=false;
-            }
-        }
-        
-        return tab;
-    }
     
-    /**
-     * Lance une partie de gaufre dans le terminal, en joueur contre joueur ou joueur contre ordinateur
-     * @throws FileNotFoundException
-     * @throws IOException 
-     */
-    public static void moteur() throws FileNotFoundException, IOException{
-        plateau = new boolean[6][8];    //plateau de jeu
-        joueur = 1; //joueur dont c'est le tour de joueur
-        int abcisse, ordonnee, choix, choixAction, difficulte=0, playAgain=0;
-        Point p = null;
-        Scanner sc = new Scanner(System.in);
+    @Override
+    public void start(Stage primaryStage) throws FileNotFoundException, IOException {
         
-        do{ //Tant que la variable playAgain vaut 1 on rejout
+        Moteur m = new Moteur();
         
-            for(int i=0; i<6; i++){ //On initialise le plateau à true
-                for(int j=0; j<8; j++){
-                    plateau[i][j]=true;
-                }
-            }
+        int i = 0;
+        int j = 0;
+        
+        primaryStage.show();
+        primaryStage.setTitle("Affichage de la gaufre");
+        StackPane pane = new StackPane();
 
-            System.out.println("Jeu de la Gaufre");
-
-            System.out.println("Entrez une valeur :");
-            System.out.println("1: Joueur contre Joueur");
-            System.out.println("2: Joueur contre Ordinateur");
-            choix = Integer.parseInt(sc.nextLine());    //Choix du mode de jeu
-
-            if(choix==2){   //si en mode contre Ordinateur, choix de la difficulté
-                System.out.println("Choisissez une difficulté :");
-                System.out.println("1: Aléatoire");
-                System.out.println("2: Coup gagnant/Non coup perdant");
-                System.out.println("3: MinMax");    //MinMax ne marche pas, ici à titre de test pour l'équipe AI
-                difficulte = Integer.parseInt(sc.nextLine());
-            }
-
-            for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau de jeu
-                System.out.print("|");
-                for(int j=0; j<8 && (plateau[i][j]==true); j++){
-                    System.out.print("_|");
-                }
-                System.out.println("");
-            }
-            System.out.println("");
-
-            while(plateau[0][0]){   //Tant que le poison n'a pas été joué, on continue la partie
-
-                System.out.println("Tour du joueur " + joueur);
-
-                if(choix==2 && joueur==2){  ///si c'est le tour de l'ordinateur
-                    AI ai = new AI(plateau,joueur);
-                    if(difficulte==1){  //difficulté aléatoire
-                        p = ai.aiAleatoire();
-                    }
-                    else if(difficulte==2){ //difficulté Coup Gagnant et sinon Coup Non Perdant
-                        p = ai.aiNonCoupPerdant();
-                    }
-                    else{   //difficulté MinMax (pas utilisable)
-                        ai.aiMinMax();
-                    }
-                    ordonnee = (int) p.getY();
-                    abcisse = (int) p.getX();
-                }
-                else{   //Tour d'un joueur humain
-                    System.out.println("Appuyer sur 1 pour sauvegarder, 2 pour charger une partie, 0 sinon");
-                    choixAction = Integer.parseInt(sc.nextLine());
-                    if(choixAction == 1)
-                        save();
-                    else if(choixAction == 2)
-                        load();
-                    
-                    System.out.print("Abcisse :");  //L'utilisateur entre l'abcisse et l'ordonnee
-                    abcisse = Integer.parseInt(sc.nextLine());
-                    System.out.println("");
-                    System.out.print("Ordonnee :");
-                    ordonnee = Integer.parseInt(sc.nextLine());
-                    System.out.println("");
-                }
+        Scene scene = new Scene(pane,n_scene,m_scene,Color.GREY);
+        
+        pane.setStyle("-fx-border-color: black;");
+        
+        /*
+        Case c = new Case(lx,ly);
+        c.setTranslateX(-200);
+        c.setTranslateY(-200);
+        pane.getChildren().add(c);
+        */
+        
+        Case[][] tab = new Case[N][M];
+        
+        for(i=0;i<N;i++){
+            for(j=0;j<M;j++){
+                tab[i][j] = new Case(lx,ly);
+                tab[i][j].setTranslateX(-((n_scene/2)-(lx/2))+lx*i);
+                tab[i][j].setTranslateY(-((m_scene/2)-(ly/2))+ly*j);
                 
-                plateau = jouer_coup(plateau, ordonnee, abcisse);
-
-                for(int i=0; i<6 && (plateau[i][0]==true); i++){    //Affichage du plateau modifié
-                    System.out.print("|");
-                    for(int j=0; j<8 && (plateau[i][j]==true); j++){
-                        System.out.print("_|");
-                    }
-                    System.out.println("");
-                }
-                System.out.println("");
-
-                if(joueur==1)   //On change le joueur dont c'est le tour
-                    joueur=2;
-                else
-                    joueur=1;
-
+                tab[i][j].c.setFill(Color.MOCCASIN);
+                
+                pane.getChildren().add(tab[i][j]);
             }
-
-            if(choix==2 && joueur==2){  //Si tour de l'ordinateur
-                System.out.println("ORDINATEUR VAINQUEUR");
-            }
-            else{   //Sinon, message de victoire adapté au joueur vainqueur
-                System.out.println("JOUEUR " + joueur + " VAINQUEUR");
-            }
-            System.out.println("Entrez 1 pour rejouer, 0 pour quitter");
-            playAgain = Integer.parseInt(sc.nextLine());
-        }while(playAgain==1);
+        }
         
+        Circle poison = new Circle();
+
+        poison.setCenterX(50);
+        poison.setCenterY(50);
+        poison.setRadius(25);
+        poison.setTranslateX(-(n_scene/2)+(lx/2)-1);
+        poison.setTranslateY(-(m_scene/2)+(ly/2)-1);
+        poison.setFill(Color.FIREBRICK);
+        pane.getChildren().add(poison);
+        
+        pane.setStyle("-fx-border-color: black;");
+
+        scene.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            public void handle(MouseEvent me){
+                //System.out.println("Coordonnée X brute : "+me.getX()+"    Coordonnée Y brute : "+ me.getY());
+                int i;
+                int j;
+                int x = toIntExact(Math.round(Math.floor(me.getY()/ly)));
+                int y = toIntExact(Math.round(Math.floor(me.getX()/lx)));
+                System.out.println("Coordonnée i : "+x+"    Coordonnée j : "+y);
+                if (m.attendre==1){
+                    m.traiterCoupHumain(x,y);
+                
+                    actualiser(tab, m);
+                    
+                    if (m.mode==1){
+                        m.attendre=1;
+                    }
+                    else{
+                        m.traiterCoupAI();
+                        actualiser(tab, m);
+                    }
+                }
+            }
+        });
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        /*
+        Circle c = new Circle();
+
+        c.setCenterX(250);
+        c.setCenterY(250);
+        c.setRadius(100);
+        c.setFill(Color.BEIGE);
+        c.setStroke(Color.FIREBRICK);
+        c.setStrokeWidth(4);
+
+        
+        c.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            public void handle(MouseEvent me){
+                if(c.getFill() == Color.BEIGE){
+                    c.setFill(Color.LIGHTSALMON);
+                }
+                else{
+                    c.setFill(Color.BEIGE);
+                }
+            }
+        });
+        
+        scene.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            public void handle(MouseEvent me){
+                System.out.println("Coordonnée X brute : "+me.getX()+"    Coordonnée Y brute : "+ me.getY());
+            }
+        });
+        
+        scene.setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override 
+            public void handle(ScrollEvent se){
+                c.setTranslateX(c.getTranslateX()-se.getDeltaX()); 
+                c.setTranslateY(c.getTranslateY()-se.getDeltaY());
+            }
+        });
+   
+        pane.getChildren().add(c);
+        */
     }
-    
-     public static void main(String[] args) throws FileNotFoundException, IOException {
-        moteur();
-     }
     
 }
