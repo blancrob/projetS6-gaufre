@@ -31,6 +31,9 @@ public class Arbre {
         return this.etat;
     }
     
+    public Vecteur getVecteur(){
+        return this.vec;
+    }
             
     public void addFils(Arbre a){
         fils.add(a);
