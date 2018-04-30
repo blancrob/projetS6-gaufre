@@ -6,10 +6,17 @@
 package gaufre;
 import java.util.*;
 import java.awt.Point;
+import static java.lang.Integer.max;
+import static java.lang.Integer.min;
+import java.lang.Iterable;
+
+
+
 public class AI {
     
     boolean[][] plateau;
     int joueur, largeur, hauteur;
+    Arbre a;
 
     
     AI(){
@@ -17,6 +24,7 @@ public class AI {
         joueur = 0;
         largeur = 0;
         hauteur = 0;
+        a = new Arbre();
     }
     
     AI(boolean[][] p, int j){
@@ -24,6 +32,8 @@ public class AI {
         joueur = j;
         largeur = p[0].length;
         hauteur = p.length;
+        a = new Arbre();
+        
     }
     
     /**
@@ -116,6 +126,7 @@ public class AI {
     }
      
       /**
+     * @param res
      * @return un int correspondant à l'heuristique de la configuration du plateau
      * Simple parcours du plateau avec addition des différentes heuristiques
      */
@@ -125,16 +136,132 @@ public class AI {
              for(int j=0; j<res[0].length; j++){
                  somme = somme + res[i][j];
              }
-         }
+        }
         return somme;
+     }
+     /**
+     * @param plateau
+     * @param ordonnee
+     * @param abscisse
+     *@return une configuration du plateau
+     *
+     */
+     public boolean[][] simulerCoup(boolean[][] plateau, int ordonnee, int abscisse){
+         boolean[][] res = plateau;
+         for(int i=ordonnee; i<6 ; i++){ //On met à false les cases mangées
+            for(int j=abscisse; j<8 ; j++){
+                res[i][j]=false;
+            }
+        }
+         return res;
+     }
+     /**
+      * 
+      * @param plateau la configuration courante.
+      * @param horizon la profondeur étudiée.
+     * @return un arbre
+      */
+     public Arbre creerArbre(boolean[][] plateau, int horizon){
+        Arbre courant = new Arbre();
+        if(horizon > 0){
+            System.out.println("-");
+            Vecteur v = new Vecteur(plateau);
+            courant.setVecteur(v);
+            int etat = this.heuristiquePlateau(this.heuristique());
+            courant.setEtat(etat);
+            for(int i=0;i<plateau.length;i++){
+                for (int j=0;j<plateau[0].length && plateau[i][j];j++){
+                    boolean[][] sim = this.simulerCoup(plateau,i,j);
+                    Arbre temp = this.creerArbre(sim, horizon-1);
+                    courant.addFils(temp);
+                }
+            }
+            boolean[][] sim = this.simulerCoup(plateau,1,1);
+            Arbre temp = this.creerArbre(sim, horizon-1);
+            courant.addFils(temp);
+        }
+        return courant;
+     }
+     /**
+      * @param ar un arbre des configurations possibles à partir de la configuration courante.
+      * @return la valeur de l'etat du meilleur chemin vers la victoire !
+      */
+     public int minimax_joueur(Arbre ar){
+         if(ar.fils.isEmpty()){
+             return ar.getEtat();
+         }
+         else{
+             int val = -1;   
+             for (Arbre fil : ar.fils) {
+                     val = max(minimax_adversaire(fil),val);
+             }
+             ar.setEtat(val);
+             return val;
+         }
+     }
+     
+     /**
+      * @param ar un arbre des configurations possibles à partir de la configuration courante.
+      * @return la valeur de l'etat du meilleur chemin vers la defaite !
+      */
+     public int minimax_adversaire(Arbre ar){
+         if(ar.fils.isEmpty()){
+                return ar.getEtat();
+             
+         }
+         else{
+             int val = 99999;   
+                for(Arbre arbre : ar.fils){
+                   val = min(minimax_adversaire(arbre),val);
+                }
+             ar.setEtat(val);
+             return val;
+         }
+     }
+     /**
+      * 
+      * @return un tableau des vecteur des meilleurs configurations suivante pour la victoire !
+      */
+     public Vecteur[] meilleurResultat(int etat){
+        Vecteur[] res = new Vecteur[10];
+        int i = 0;
+        for(Arbre ar : a.fils){
+            if(ar.getEtat() == etat && i < 10){
+                res[i]=ar.getVecteur();
+                i++;
+            }
+        }
+        return res;
+     }
+     
+     public Point meilleurCoup(Vecteur[] tab){
+         Point p = new Point();
+         Random r = new Random();
+         int k =r.nextInt(tab.length-1);
+         while (tab[k]==null){
+             k=r.nextInt(tab.length-1);
+         }
+         Vecteur v = tab[k];
+         System.out.println("config :");
+         boolean[][] config = v.plateau();
+         int abs = 0;
+         int ord = 0;
+         while (ord < plateau.length && (plateau[ord][abs]==config[ord][abs])){
+             abs = 0;
+             while(abs < plateau[0].length && (plateau[ord][abs]==config[ord][abs])){
+                 abs++;
+             }
+             ord++;
+         }
+         p.setLocation(ord,abs);
+         return p;    
+         
      }
      
      
      public Point aiMinMax(){
-         
-        Point p = new Point();
-        
-        
+        a = this.creerArbre(plateau, 5);
+        Point p = this.meilleurCoup(this.meilleurResultat(this.minimax_joueur(a)));
         return p;
      }
     
