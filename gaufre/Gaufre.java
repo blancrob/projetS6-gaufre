@@ -162,6 +162,12 @@ public class Gaufre extends Application {
         btn6.setOnAction((ActionEvent event) -> {
             //Arrière
             m.undo();
+            if(m.joueur==1 && m.mode!=2){
+                tour.setText("Tour Joueur 1");
+            }
+            else if(m.joueur==2 && m.mode!=2){
+                tour.setText("Tour Joueur 2");
+            }
             actualiser(tab,m);
             /*if(m.joueur==1 && m.mode!=2){
                 tour.setText("Tour Joueur 2");
@@ -174,6 +180,12 @@ public class Gaufre extends Application {
         btn7.setOnAction((ActionEvent event) -> {
             //Avant
             m.redo();
+            if(m.joueur==1 && m.mode!=2){
+                tour.setText("Tour Joueur 1");
+            }
+            else if(m.joueur==2 && m.mode!=2){
+                tour.setText("Tour Joueur 2");
+            }
             actualiser(tab,m);
             /*if(m.joueur==1 && m.mode!=2){
                 tour.setText("Tour Joueur 2");

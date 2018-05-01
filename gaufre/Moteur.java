@@ -49,6 +49,14 @@ public class Moteur {
             }
             redo.push(tmp);
             plateau = undo.pop();
+            if (mode==1){
+                if(joueur==1){
+                    joueur=2;
+                }
+                else{
+                    joueur=1;
+                }
+            }
         }
     }
     
@@ -62,6 +70,14 @@ public class Moteur {
             }
             undo.push(plateau);
             plateau = redo.pop();
+            if (mode==1){
+                if(joueur==1){
+                    joueur=2;
+                }
+                else{
+                    joueur=1;
+                }
+            }
         }
     }
     
@@ -119,6 +135,9 @@ public class Moteur {
     }
     
     public void traiterCoupHumain(int ordonnee, int abcisse){
+        while(!redo.empty()){
+            redo.pop();
+        }
         plateau = jouer_coup(plateau, ordonnee, abcisse);
         attendre=0;
         if(joueur==1){
