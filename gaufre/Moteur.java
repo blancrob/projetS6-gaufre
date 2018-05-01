@@ -118,18 +118,6 @@ public class Moteur {
         br.close();
     }
     
-    public void fin(){
-        if(plateau[0][0]==false){
-            if(mode==2 && joueur==2){  //Si tour de l'ordinateur
-                System.out.println("ORDINATEUR VAINQUEUR");
-            }
-            else{   //Sinon, message de victoire adapté au joueur vainqueur
-                System.out.println("JOUEUR " + joueur + " VAINQUEUR");
-            }
-            //System.exit(0);
-        }
-    }
-    
     public void traiterCoupHumain(int ordonnee, int abcisse){
         plateau = jouer_coup(plateau, ordonnee, abcisse);
         attendre=0;
@@ -139,13 +127,11 @@ public class Moteur {
         else{
             joueur=1;
         }
-        fin();
     }
     
     public void traiterCoupAI(){
         jouer_coup_ai(plateau,difficulte);
         joueur = 1;
-        fin();
         attendre=1;
         
     }
@@ -165,15 +151,6 @@ public class Moteur {
                 tab[i][j]=false;
             }
         }
-        
-        for(int i=0; i<6 && (tab[i][0]==true); i++){    //Affichage du plateau de jeu
-            System.out.print("|");
-            for(int j=0; j<8 && (tab[i][j]==true); j++){
-                System.out.print("_|");
-            }
-            System.out.println("");
-        }
-        System.out.println("");
         
         return tab;
     }
@@ -202,15 +179,6 @@ public class Moteur {
                 tab[i][j]=false;
             }
         }
-        
-        for(int i=0; i<6 && (tab[i][0]==true); i++){    //Affichage du plateau de jeu
-            System.out.print("|");
-            for(int j=0; j<8 && (tab[i][j]==true); j++){
-                System.out.print("_|");
-            }
-            System.out.println("");
-        }
-        System.out.println("");
         
         return tab;
     }

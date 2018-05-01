@@ -128,8 +128,6 @@ public class Gaufre extends Application {
 
             if(x<M && y<N){
                 //begin=1;
-
-                System.out.println("Coordonnée i : "+x+"    Coordonnée j : "+y);
                 
                 if(m.plateau[x][y]==true){
                     
@@ -155,6 +153,7 @@ public class Gaufre extends Application {
                     }
                 }
                 if(m.plateau[0][0]==false){
+                    ai=0;   //on empêche l'ai de chercher à rejouer
                     affichage_resultat(primaryStage);
                 }
             }
