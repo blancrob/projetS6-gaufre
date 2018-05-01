@@ -96,6 +96,36 @@ public class Moteur {
                 }
             }
         }
+        ffw.write("-\n");
+        
+        ArrayList<boolean[][]> undo2 = new ArrayList();
+        while(!undo.empty()){
+            undo2.add(undo.pop());
+        }
+        ListIterator<boolean[][]> it = undo2.listIterator(undo2.size());
+        while(it.hasPrevious()){
+            Vecteur v = new Vecteur(it.previous());
+            ffw.write(v.vec+"\n");
+        }
+        it = undo2.listIterator(undo2.size());
+        while(it.hasPrevious()){
+            undo.push(it.previous());
+        }
+        ffw.write("-\n");
+        
+        ArrayList<boolean[][]> redo2 = new ArrayList();
+        while(!redo.empty()){
+            redo2.add(redo.pop());
+        }
+        it = redo2.listIterator(redo2.size());
+        while(it.hasPrevious()){
+            Vecteur v = new Vecteur(it.previous());
+            ffw.write(v.vec+"\n");
+        }
+        it = redo2.listIterator(redo2.size());
+        while(it.hasPrevious()){
+            redo.push(it.previous());
+        }
         ffw.close();
     }
     
@@ -108,7 +138,7 @@ public class Moteur {
         File f = new File("sauvegarde.txt");
         BufferedReader br = new BufferedReader(new FileReader(f));
         String line;
-        String[] coord;
+        String[] coord,vec;
         
         for(int i=0; i<6; i++){ //on initialise toutes les cases du plateau à false
             for(int j=0; j<8; j++){
@@ -116,20 +146,32 @@ public class Moteur {
             }
         }
         
-        while ((line = br.readLine()) != null) {    //On récupère les coordonnées des cases dans le fichier sauvegarde.txt, puis on les met à true dans le plateau
+        //On vide les piles undo et redo
+        
+        while(!undo.empty()){
+            undo.pop();
+        }
+        
+        while(!redo.empty()){
+            redo.pop();
+        }
+        
+        while (!(line = br.readLine()).equals("-")) {    //On récupère les coordonnées des cases dans le fichier sauvegarde.txt, puis on les met à true dans le plateau
             coord=line.split(" ");
             plateau[ Integer.parseInt(coord[0]) ][ Integer.parseInt(coord[1]) ] = true;
         }
         
-        System.out.println("Plateau chargé:");
-        for(int i=0; i<6 && (plateau[i][0]==true); i++){    //affichage du plateau chargé
-            System.out.print("|");
-            for(int j=0; j<8 && (plateau[i][j]==true); j++){
-                System.out.print("_|");
-            }
-            System.out.println("");
+        while (!(line = br.readLine()).equals("-")) {    //On récupère les coordonnées des cases dans le fichier sauvegarde.txt, puis on les met à true dans le plateau
+            Vecteur2 v = new Vecteur2(Integer.parseInt(line));
+            undo.push(v.toPlateau(6,8));
         }
-        System.out.println("");
+        
+        while ((line = br.readLine()) != null) {    //On récupère les coordonnées des cases dans le fichier sauvegarde.txt, puis on les met à true dans le plateau
+            Vecteur2 v = new Vecteur2(Integer.parseInt(line));
+            redo.push(v.toPlateau(6,8));
+        }
+        
+        
             
         br.close();
     }
